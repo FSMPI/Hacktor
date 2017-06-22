@@ -343,7 +343,7 @@ services:
       ports:
         - 80:80
       volumes:
-        - ~/Documents/Workspace/Docker/Methusa/wp_html:/var/www/html
+        - ./data/website:/var/www/html
 
     phpmyadmin:
       image: corbinu/docker-phpmyadmin
