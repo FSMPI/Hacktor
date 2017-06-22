@@ -337,14 +337,14 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
 
-    wordpress:
-      image: wordpress
-      links:
-        - mysql-mailcow:mysql
-      ports:
-        - 8080:80
-      volumes:
-        - ~/Documents/Workspace/Docker/Methusa/wp_html:/var/www/html
+    #wordpress:
+    #  image: wordpress
+    #  links:
+    #    - mysql-mailcow:mysql
+    #  ports:
+    #    - 8080:80
+    #  volumes:
+    #    - ~/Documents/Workspace/Docker/Methusa/wp_html:/var/www/html
 
     phpmyadmin:
       image: corbinu/docker-phpmyadmin
