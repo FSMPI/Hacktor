@@ -1,18 +1,18 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/vars.inc.php';
-if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/vars.local.inc.php')) {
-  include_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/vars.local.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
+if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
+  include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/sessions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 header_remove("X-Powered-By");
 
 // Yubi OTP API
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/lib/Yubico.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';
 
 // Autoload composer
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/lib/vendor/autoload.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 
 // U2F API + T/HOTP API
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
@@ -57,13 +57,13 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_GET['lang'];
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/lang/lang.en.php';
-include $_SERVER['DOCUMENT_ROOT'] . '/mailcow/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/functions.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/functions.mailbox.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/functions.policy.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/functions.dkim.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/functions.fwdhost.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/init_db.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/triggers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

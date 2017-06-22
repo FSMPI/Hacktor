@@ -390,7 +390,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
 </div>
 </div> <!-- /container -->
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/user.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
 ?>
 <script type='text/javascript'>
 <?php

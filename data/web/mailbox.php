@@ -152,7 +152,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   </div> <!-- /row -->
 </div> <!-- /container -->
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/mailbox.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/mailbox.php';
 ?>
 <script type='text/javascript'>
 <?php
@@ -167,7 +167,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 <script src="js/footable.min.js"></script>
 <script src="js/mailbox.js"></script>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/footer.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
 	header('Location: /');
 	exit();
