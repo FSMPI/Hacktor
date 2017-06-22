@@ -231,7 +231,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<input name="spam_score" id="spam_score" type="text" 
+					<input name="spam_score" id="spam_score" type="text"
 						data-provide="slider"
 						data-slider-min="1"
 						data-slider-max="30"
@@ -390,7 +390,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
 </div>
 </div> <!-- /container -->
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/user.php';
 ?>
 <script type='text/javascript'>
 <?php

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/footer.php';
 ?>
 <div style="margin-bottom: 100px;"></div>
 <script src="/js/bootstrap.min.js"></script>

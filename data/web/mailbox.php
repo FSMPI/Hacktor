@@ -6,7 +6,7 @@ require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
 <div class="container">
-      
+
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab"><?=$lang['mailbox']['domains'];?></a></li>
     <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>
@@ -152,7 +152,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   </div> <!-- /row -->
 </div> <!-- /container -->
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/mailbox.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/mailbox.php';
 ?>
 <script type='text/javascript'>
 <?php
@@ -167,7 +167,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 <script src="js/footable.min.js"></script>
 <script src="js/mailbox.js"></script>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/footer.inc.php';
 } else {
 	header('Location: /');
 	exit();

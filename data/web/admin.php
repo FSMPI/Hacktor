@@ -231,7 +231,7 @@ $tfa_data = get_tfa();
         </form>
       </div>
     </div>
-    
+
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
@@ -345,7 +345,7 @@ $tfa_data = get_tfa();
   </div>
 </div> <!-- /container -->
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/modals/admin.php';
 ?>
 <script type='text/javascript'>
 <?php
@@ -359,7 +359,7 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 <script src="js/footable.min.js"></script>
 <script src="js/admin.js"></script>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/mailcow/inc/footer.inc.php';
 } else {
 	header('Location: /');
 	exit();
