@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "myhostname": "fsmpi.uni-bayreuth.de",
+    "mailman": {
+      "secret_key": "supersecretkey123",
+      "language_code": "de-de",
+      "time_zone": "Europe/Berlin",
+      "admin_email": "listmaster@mydomain.com",
+      "domains": ["fsmpi.uni-bayreuth.de"]
+    }
+  }
+}
