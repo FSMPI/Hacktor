@@ -366,7 +366,7 @@ services:
         - ./mailman-data:/mailman/var
         - ./conf/mailman:/mail_settings
       ports:
-        - 80:8282
+        - 8282:80
         - 8024:8024
 
 networks:
