@@ -5,7 +5,7 @@
       "secret_key": "supersecretkey123",
       "language_code": "de-de",
       "time_zone": "Europe/Berlin",
-      "admin_email": "listmaster@mydomain.com",
+      "admin_email": "fsmpi@uni-bayreuth.de",
       "domains": ["hacktor.fs.uni-bayreuth.de"]
     }
   }
