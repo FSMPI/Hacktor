@@ -365,7 +365,7 @@ services:
       volumes:
         - mailman-data:/mailman/var
         - mailman-config:/mail_settings
-      expose:
+      ports:
         - 80:8282
         - 8024:8024
 
