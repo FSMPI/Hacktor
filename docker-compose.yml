@@ -363,8 +363,8 @@ services:
     mail-mailman:
       image: sebastiangraf/docker-mailman3
       volumes:
-        - mailman-data:/mailman/var
-        - mailman-config:/mail_settings
+        - ./mailman-data:/mailman/var
+        - ./conf/mailman:/mail_settings
       ports:
         - 80:8282
         - 8024:8024
