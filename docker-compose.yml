@@ -255,11 +255,11 @@ services:
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
-        nginx -g 'daemon off;'" &&
-        mkdir /web/rainloop &&
-        cd /var/www/mail/rainloop &&
-        curl -s http://repository.rainloop.net/installer.php | php &&
-        'chown -R www-data: /var/www/mail/rainloop'
+        nginx -g 'daemon off;'" #&&
+        #mkdir /web/rainloop &&
+        #cd /var/www/mail/rainloop &&
+        #curl -s http://repository.rainloop.net/installer.php | php &&
+        #'chown -R www-data: /var/www/mail/rainloop'
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
@@ -366,8 +366,8 @@ services:
         - mailman-data:/mailman/var
         - mailman-config:/mail_settings
       expose:
-        - "80:8282"
-        - "8024:8024"
+        - 80:8282
+        - 8024:8024
 
 networks:
   mailcow-network:
