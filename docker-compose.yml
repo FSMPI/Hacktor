@@ -344,27 +344,39 @@ services:
       image: wordpress
       links:
         - mysql-mailcow:mysql
+      depends_on:
+        - mysql-mailcow
       ports:
         - 80:80
         - 443:443
       volumes:
         - ./data/website:/var/www/html
+      networks:
+        mailcow-network:
+          ipv4_address: 172.22.1.248
+          aliases:
+            - wordpress
 
     phpmyadmin:
-      image: corbinu/docker-phpmyadmin
+      image: phpmyadmin/phpmyadmin
       links:
-        - mysql-mailcow:mysql
+        - mysql-mailcow:db
+      depends_on:
+        - mysql-mailcow
       ports:
         - 8181:80
-      environment:
-        MYSQL_USERNAME: root
-        MYSQL_ROOT_PASSWORD: example
+      networks:
+        mailcow-network:
+          ipv4_address: 172.22.1.249
+          aliases:
+            - phpmyadmin
 
     mail-mailman:
       image: sebastiangraf/docker-mailman3
       volumes:
-        - ./mailman-data:/mailman/var
+        - ./data/mailman-data:/mailman/var
         - ./data/conf/mailman:/mail_settings
+        - ./data/mailman-www:/var/www
       ports:
         - 8282:80
         - 8024:8024
