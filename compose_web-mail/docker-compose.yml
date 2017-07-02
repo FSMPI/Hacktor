@@ -307,7 +307,7 @@ services:
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
         - /var/run/docker.sock:/var/run/docker.sock:ro
       # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
-      restart: on-failure:1
+      restart: always
       networks:
         mailcow-network:
           aliases:
@@ -366,6 +366,7 @@ services:
         - mysql-mailcow
       ports:
         - 8181:80
+      restart: always
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.249
@@ -381,6 +382,7 @@ services:
       ports:
         - 8282:80
         - 8024:8024
+      restart: always
 
 networks:
   mailcow-network:
