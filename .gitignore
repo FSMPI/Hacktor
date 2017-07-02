@@ -13,4 +13,3 @@ data/assets/ssl/*
 data/web/.well-known/acme-challenge
 data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
-generate_config.sh
