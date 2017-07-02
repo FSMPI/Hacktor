@@ -54,7 +54,7 @@ services:
         unbound-mailcow:
           condition: service_healthy
       volumes:
-        - ../volumesredis-vol-1:/data/
+        - ../volumes/redis-vol-1:/data/
       restart: always
       dns:
         - 172.22.1.254
@@ -377,7 +377,7 @@ services:
       volumes:
         - ../volumes/mailman/var:/mailman/var
         - ./data/conf/mailman:/mail_settings
-        - ../volumes/data/mailman/www:/var/www
+        - ../volumes/mailman/www:/var/www
       ports:
         - 8282:80
         - 8024:8024
