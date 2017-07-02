@@ -93,10 +93,13 @@ milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
 #content_filter=zeyple
 # Prefere IPv4, useful for v4-only envs
-smtp_address_preference = ipv4
-recipient_delimiter = +
-unknown_local_recipient_reject_code = 550
-owner_request_special = no
-transport_maps = hash:/mailman/var/data/postfix_lmtp
-local_recipient_maps = hash:/mailman/var/data/postfix_lmtp
-relay_domains = hash:/mailman/var/data/postfix_domains
+#
+# The Following config is used for mailman
+#
+#smtp_address_preference = ipv4
+#recipient_delimiter = +
+#unknown_local_recipient_reject_code = 550
+#owner_request_special = no
+#transport_maps = hash:/mailman/var/data/postfix_lmtp
+#local_recipient_maps = hash:/mailman/var/data/postfix_lmtp
+#relay_domains = hash:/mailman/var/data/postfix_domains
