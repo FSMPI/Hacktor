@@ -377,7 +377,7 @@ services:
       volumes:
         - ../volumes/mailman/var:/mailman/var
         - ./data/conf/mailman:/mail_settings
-        - ../volumes/data/mailman/www:/var/www
+        - ../volumes/mailman/www:/var/www
       ports:
         - 8282:80
         - 8024:8024
