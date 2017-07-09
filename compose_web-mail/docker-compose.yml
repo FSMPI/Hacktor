@@ -67,7 +67,7 @@ services:
 
     clamd-mailcow:
       image: mailcow/clamd:1.0
-      build: ./data/Dockerfiles/clamav
+      build: ./data/Dockerfiles/clamd
       restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
