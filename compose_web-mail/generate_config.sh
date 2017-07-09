@@ -58,7 +58,7 @@ HTTPS_BIND=0.0.0.0
 # ------------------------------
 # You should leave that alone
 # Format: 11.22.33.44:25 or 0.0.0.0:465 etc.
-# Do _not_ use IP:PORT in HTTPS_BIND or HTTPS_PORT
+# Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 
 SMTP_PORT=25
 SMTPS_PORT=465
@@ -81,8 +81,14 @@ ADDITIONAL_SAN=
 # To never run acme-mailcow for Let's Encrypt, set this to y
 SKIP_LETS_ENCRYPT=n
 
+# Skip IPv4 check in ACME container
+SKIP_IP_CHECK=n
+
 # To never run fail2ban-mailcow
 SKIP_FAIL2BAN=n
+
+# To never run clamd-mailcow
+SKIP_CLAMD=n
 
 EOF
 

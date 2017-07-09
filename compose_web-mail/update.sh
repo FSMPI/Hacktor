@@ -1,14 +1,5 @@
 #!/bin/bash
 
-echo -en "Checking internet connection... "
-timeout 1 bash -c "echo >/dev/tcp/8.8.8.8/53"
-if [[ $? != 0 ]]; then
-	echo -e "\e[31mfailed\e[0m"
-	exit 1
-else
-	echo -e "\e[32mOK\e[0m"
-fi
-
 if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
 if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
 if [[ -z $(which docker) ]]; then echo "Cannot find docker, exiting."; exit 1; fi
@@ -16,11 +7,51 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
+CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN")
+echo >> mailcow.conf
+for option in ${CONFIG_ARRAY[@]}; do
+	if [[ ${option} == "ADDITIONAL_SAN" ]]; then
+		if ! grep -q ${option} mailcow.conf; then
+			echo "Adding new option \"${option}\" to mailcow.conf"
+			echo "${option}=" >> mailcow.conf
+		fi
+	elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
+		if ! grep -q ${option} mailcow.conf; then
+			echo "Adding new option \"${option}\" to mailcow.conf"
+			echo "${COMPOSE_PROJECT_NAME}=mailcow-dockerized" >> mailcow.conf
+		fi
+	elif ! grep -q ${option} mailcow.conf; then
+		echo "Adding new option \"${option}\" to mailcow.conf"
+		echo "${option}=n" >> mailcow.conf
+	fi
+done
+
+echo -en "Checking internet connection... "
+curl -o /dev/null google.com -sm3
+if [[ $? != 0 ]]; then
+	echo -e "\e[31mfailed\e[0m"
+	exit 1
+else
+	echo -e "\e[32mOK\e[0m"
+fi
+
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
+
+case "${1}" in
+	--check|-c)
+		echo "Checking remote code for updates..."
+		git fetch origin ${BRANCH}
+		if ! git diff origin/${BRANCH} --quiet; then
+			echo "Updated code is available."
+		else
+			echo "No updates available."
+		fi
+		exit 0
+	;;
+esac
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -32,7 +63,6 @@ if [[ ${SHA1_1} != ${SHA1_2} ]]; then
 	chmod +x update.sh
 	exit 0
 fi
-rm -f mv ${TMPFILE}
 
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf
@@ -79,30 +109,70 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
 	exit 1
 fi
 
+
+echo -e "\e[32mFetching new docker-compose version...\e[0m"
+sleep 2
+if [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
+	LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+	curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
+	chmod +x $(which docker-compose)
+else
+	echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
+fi
+
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
-docker-compose pull
+docker-compose pull --parallel
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
-echo -e "\e[32mFetching new docker-compose version...\e[0m"
-sleep 2
-curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
-chmod +x $(which docker-compose)
-
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
-#echo -e "\e[32mCleaning up Docker objects...\e[0m"
-if docker images -f "dangling=true" | grep ago --quiet; then
-	docker rmi -f $(docker images -f "dangling=true" -q)
-	docker volume rm $(docker volume ls -qf dangling=true)
-fi
 
-echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-echo
-git reflog --color=always | grep "Before update on "
-echo
-echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
+echo -e "\e[32mCollecting garbage...\e[0m"
+IMGS_TO_DELETE=()
+for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
+	REPOSITORY=${container/:*}
+	TAG=${container/*:}
+	V_MAIN=${container/*.}
+	V_SUB=${container/*.}
+
+	EXISTING_TAGS=$(docker images | grep ${REPOSITORY} | awk '{ print $2 }')
+	for existing_tag in ${EXISTING_TAGS[@]}; do
+		V_MAIN_EXISTING=${existing_tag/*.}
+		V_SUB_EXISTING=${existing_tag/*.}
+		if [[ $V_MAIN_EXISTING == "latest" ]]; then
+			echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
+			IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+		elif [[ $V_MAIN_EXISTING -lt $V_MAIN ]]; then
+			echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
+			IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+		elif [[ $V_SUB_EXISTING -lt $V_SUB ]]; then
+			echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
+			IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+		fi
+	done
+done
+if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
+	echo "Run the following command to delete unused image tags:"
+	echo
+	echo "    docker rmi ${IMGS_TO_DELETE[*]}"
+	echo
+	read -r -p "Do you want to delete old image tags right now? [Y/n] " response
+	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+		docker rmi ${IMGS_TO_DELETE[*]}
+	else
+		echo "OK, skipped."
+	fi
+fi
+echo -e "\e[32mFurther cleanup...\e[0m"
+echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
+
+#echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+#echo
+#git reflog --color=always | grep "Before update on "
+#echo
+#echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."

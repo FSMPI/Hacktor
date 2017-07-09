@@ -22,6 +22,7 @@ $tfa_data = get_tfa();
     <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
     <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
     <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
+    <li role="presentation"><a href="#tab-fail2ban-logs" aria-controls="tab-fail2ban-logs" role="tab" data-toggle="tab">Fail2ban</a></li>
     <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
     </ul>
     </li>
@@ -229,9 +230,30 @@ $tfa_data = get_tfa();
           </div>
           <button class="btn btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
+
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" id="import_dkim_legend" unselectable="on" data-toggle="collapse"><span id="import_dkim_arrow" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?></legend>
+        <div id="import_dkim" class="collapse">
+        <form class="form" data-id="dkim_import" role="form" method="post">
+          <div class="form-group">
+            <label for="domain">Domain:</label>
+            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+          </div>
+          <div class="form-group">
+            <label for="domain">Selector:</label>
+            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+          </div>
+          <div class="form-group">
+            <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
+            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA PRIVATE KEY-----
+XYZ
+-----END RSA PRIVATE KEY-----"></textarea>
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
+        </form>
+        </div>
       </div>
     </div>
-
+    
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
@@ -265,6 +287,34 @@ $tfa_data = get_tfa();
             </select>
           </div>
           <button class="btn btn-default" id="add_item" data-id="fwdhost" data-api-url='add/fwdhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
+      <div class="panel-body">
+      <?php
+      $f2b_data = fail2ban('get');
+      ?>
+        <form class="form" data-id="f2b" role="form" method="post">
+          <div class="form-group">
+            <label for="ban_time"><?=$lang['admin']['f2b_ban_time'];?>:</label>
+            <input type="number" class="form-control" id="ban_time" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
+          </div>
+          <div class="form-group">
+            <label for="max_attempts"><?=$lang['admin']['f2b_max_attempts'];?>:</label>
+            <input type="number" class="form-control" id="max_attempts" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
+          </div>
+          <div class="form-group">
+            <label for="retry_window"><?=$lang['admin']['f2b_retry_window'];?>:</label>
+            <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
+          </div>
+          <div class="form-group">
+            <label for="retry_window"><?=$lang['admin']['f2b_whitelist'];?>:</label>
+            <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
@@ -319,6 +369,24 @@ $tfa_data = get_tfa();
       <div class="panel-body">
         <div class="table-responsive">
           <table class="table table-striped table-condensed" id="sogo_log"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
+    <div class="panel panel-default">
+      <div class="panel-heading">Fail2ban
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="fail2ban_log"></table>
         </div>
       </div>
     </div>

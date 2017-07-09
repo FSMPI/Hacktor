@@ -15,10 +15,6 @@ jQuery(function($){
       return entityMap[s];
     });
   }
-  function unix_time_format(tm) {
-    var date = new Date(tm ? tm * 1000 : 0);
-    return date.toLocaleString();
-  }
   function humanFileSize(bytes) {
     if(Math.abs(bytes) < 1024) {
         return bytes + ' B';
@@ -43,9 +39,17 @@ jQuery(function($){
     e.preventDefault();
     draw_sogo_logs();
   });
+  $("#refresh_fail2ban_log").on('click', function(e) {
+    e.preventDefault();
+    draw_fail2ban_logs();
+  });
   $("#refresh_rspamd_history").on('click', function(e) {
     e.preventDefault();
     draw_rspamd_history();
+  });
+  $("#import_dkim_legend").on('click', function(e) {
+    e.preventDefault();
+    $('#import_dkim_arrow').toggleClass("animation"); 
   });
   function draw_postfix_logs() {
     ft_postfix_logs = FooTable.init('#postfix_log', {
@@ -65,8 +69,56 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.message = escapeHtml(item.message);
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
+            if (jQuery.inArray(item.priority, danger_class) !== -1) {
+              item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+            } 
+            else if (jQuery.inArray(item.priority, warning_class) !== -1) {
+              item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+            }
+            else if (jQuery.inArray(item.priority, info_class) !== -1) {
+              item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
+          });
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": log_pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+  function draw_fail2ban_logs() {
+    ft_fail2ban_logs = FooTable.init('#fail2ban_log', {
+      "columns": [
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
+        {"name":"message","title":lang.message},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/fail2ban/1000',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw fail2ban log table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            var danger_class = ["emerg", "alert", "crit", "err"];
+            var warning_class = ["warning", "warn"];
+            var info_class = ["notice", "info", "debug"];
+            item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
               item.priority = '<span class="label label-danger">' + item.priority + '</span>';
             } 
@@ -112,7 +164,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
@@ -160,7 +212,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
@@ -253,7 +305,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="#" id="delete_selected" data-id="single-domain-admin" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             if (item.keep_spam == "yes") {
               item.keep_spam = lang.no;
@@ -279,16 +331,12 @@ jQuery(function($){
   function draw_rspamd_history() {
     ft_postfix_logs = FooTable.init('#rspamd_history', {
       "columns": [{
-        "name": "message-id",
-        "title": "ID",
-        "breakpoints": "all",
-        "style": {
-          "minWidth": 130,
-          "overflow": "hidden",
-          "textOverflow": "ellipsis",
-          "wordBreak": "break-all",
-          "whiteSpace": "normal"
-        }
+          "name":"unix_time",
+          "formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},
+          "title":lang.time,
+          "style":{
+            "width":"170px"
+          }
         }, {
           "name": "ip",
           "title": "IP address",
@@ -350,11 +398,16 @@ jQuery(function($){
             "maxWidth": 72
           },
         }, {
-          "sorted": true,
-          "breakpoints": "all",
-          "direction": "DESC",
-          "name": "time",
-          "title": "Time",
+        "name": "message-id",
+        "title": "ID",
+        "breakpoints": "all",
+        "style": {
+          "minWidth": 130,
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "wordBreak": "break-all",
+          "whiteSpace": "normal"
+        }
         }, {
           "name": "user",
           "title": "Authenticated user",
@@ -395,12 +448,6 @@ jQuery(function($){
             }).map(function(e) {
               return e.str;
             }).join("<br>\n");
-            item.time = {
-              "value": unix_time_format(item.unix_time),
-              "options": {
-                "sortValue": item.unix_time
-              }
-            };
             var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
             item.scan_time = {
               "options": {
@@ -454,6 +501,7 @@ jQuery(function($){
   draw_postfix_logs();
   draw_dovecot_logs();
   draw_sogo_logs();
+  draw_fail2ban_logs();
   draw_domain_admins();
   draw_fwd_hosts();
   draw_rspamd_history();

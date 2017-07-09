@@ -1,5 +1,0 @@
-user = mailcow
-password = dbpass
-hosts = mysql
-dbname = mailcow
-query = SELECT maildir FROM mailbox WHERE username='%s' AND active = '1'

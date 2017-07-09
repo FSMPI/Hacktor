@@ -6,7 +6,7 @@ require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
 <div class="container">
-
+      
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab"><?=$lang['mailbox']['domains'];?></a></li>
     <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>

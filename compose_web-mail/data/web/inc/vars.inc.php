@@ -17,6 +17,33 @@ $database_name = getenv('DBNAME');
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
+// Autodiscover settings
+$autodiscover_config = array(
+  // Enable the autodiscover service for Outlook desktop clients
+  'useEASforOutlook' => 'yes',
+  // General autodiscover service type: "activesync" or "imap"
+  'autodiscoverType' => 'activesync',
+  // Please don't use STARTTLS-enabled service ports here.
+  // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
+  'imap' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('IMAPS_PORT'),
+  ),
+  'smtp' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('SMTPS_PORT'),
+  ),
+  'activesync' => array(
+    'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
+  ),
+  'caldav' => array(
+    'url' => 'https://'.$mailcow_hostname
+  ),
+  'carddav' => array(
+    'url' => 'https://'.$mailcow_hostname
+  )
+);
+
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page

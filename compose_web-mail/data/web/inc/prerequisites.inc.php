@@ -37,7 +37,7 @@ $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
   PDO::ATTR_EMULATE_PREPARES   => false,
-  PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "'",
+  PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
 ];
 try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
@@ -64,6 +64,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

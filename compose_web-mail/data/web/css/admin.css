@@ -11,6 +11,11 @@ table.footable>tbody>tr.footable-empty>td {
 .table-responsive {
   overflow: visible !important;
 }
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    overflow-x: scroll !important;
+  }
+}
 body {
   overflow-y:scroll;
 }
@@ -25,4 +30,15 @@ body.modal-open {
 }
 .inputMissingAttr {
   border-color: #FF4136;
+}
+.rotate {
+  -moz-transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+}
+.rotate.animation {
+  -ms-transform:rotateX(180deg);
+  -moz-transform:rotateX(180deg);
+  -webkit-transform:rotateX(180deg);
+  transform:rotateX(180deg);
 }

@@ -390,6 +390,39 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "dkim_import":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (dkim('import', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
           case "domain-admin":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
@@ -472,6 +505,21 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   $logs = get_logs('dovecot-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              case "fail2ban":
+                if (isset($extra) && !empty($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('fail2ban-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('fail2ban-mailcow', -1);
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -1897,6 +1945,41 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   'type' => 'error',
                   'msg' => 'Incomplete post data'
                 ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "fail2ban":
+            // No items
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (fail2ban('edit', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Edit failed'
+                  ));
+                }
+                exit();
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
               }
             }
             else {
