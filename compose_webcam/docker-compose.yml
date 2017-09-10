@@ -1,0 +1,20 @@
+version: '2.1'
+
+
+services:
+
+  rtmpserver:
+    image: tiangolo/nginx-rtmp
+    ports:
+      - 1935:1935
+    restart: always
+
+  ffmpeg:
+    #image: ffmpeg
+    build: ./images/ffmpeg
+    links:
+      - "rtmpserver"
+    depends_on:
+      - "rtmpserver"
+    #command: "ffmpeg -f mjpeg -i "http://webcam:fsmpi@olaf.fs.uni-bayreuth.de/video.cgi" -f flv rtmp://rtmpserver/live"
+    restart: always
