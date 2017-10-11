@@ -51,5 +51,5 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 1935
-EXPOSE 8080
+EXPOSE 1936
 CMD ["nginx", "-g", "daemon off;"]
