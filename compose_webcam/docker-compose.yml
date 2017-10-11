@@ -4,10 +4,18 @@ version: '2.1'
 services:
 
   rtmpserver:
-    image: tiangolo/nginx-rtmp
+    build: ./images/rtmpserver
     ports:
       - 1935:1935
+      - 8080:8080
     restart: always
+    volumes:
+      - $PWD/tmp:/tmp
+    networks:
+      webcam-network:
+        ipv4_address: 172.22.2.2
+        aliases:
+          - rtmpserver
 
   ffmpeg:
     #image: ffmpeg
@@ -18,3 +26,17 @@ services:
       - "rtmpserver"
     #command: "ffmpeg -f mjpeg -i "http://webcam:fsmpi@olaf.fs.uni-bayreuth.de/video.cgi" -f flv rtmp://rtmpserver/live"
     restart: always
+    networks:
+      webcam-network:
+        ipv4_address: 172.22.2.3
+        aliases:
+          - ffmpeg
+
+
+networks:
+  webcam-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.2.0/24
